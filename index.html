@@ -127,7 +127,7 @@
                 output.scrollTop = output.scrollHeight; // 自動スクロール
 
                 // 5ブロックマイニング成功で終了
-                if (minedBlocks >= 5) {
+                if (minedBlocks >= 100) {
                     clearInterval(miningInterval);
                     output.innerHTML += 'Bitcoin Mining Simulation Complete!';
                     startButton.disabled = false;
