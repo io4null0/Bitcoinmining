@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,19 +100,25 @@
             startButton.disabled = true;
             output.innerHTML = 'Starting Bitcoin Mining Simulation...\n\n';
             let minedBlocks = 0;
+            let attempts = 0;
 
             while (minedBlocks < 5) {
                 const { hash, nonce } = generateRandomHash();
                 const resolvedHash = await hash;
 
-                if (resolvedHash.startsWith('0000')) {
-                    output.innerHTML += `[SUCCESS] Block #${minedBlocks + 1}\n`;
+                // 成功判定の確率を調整
+                const isSuccessful = Math.random() < 0.1; // 10%の確率で成功
+                attempts++;
+
+                if (isSuccessful) {
+                    output.innerHTML += `[SUCCESS] Block #${minedBlocks + 1} mined after ${attempts} attempts!\n`;
                     output.innerHTML += `Hash: ${resolvedHash}\n`;
                     output.innerHTML += `Nonce: ${nonce}\n`;
                     output.innerHTML += `---------------------------------\n`;
                     minedBlocks++;
+                    attempts = 0; // リセット
                 } else {
-                    output.innerHTML += `[...] Mining... Current Hash: ${resolvedHash.slice(0, 20)}...\n`;
+                    output.innerHTML += `[...] Mining... Attempt ${attempts}: Hash ${resolvedHash.slice(0, 20)}...\n`;
                 }
 
                 output.scrollTop = output.scrollHeight; // 自動スクロール
