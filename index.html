@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,6 +73,10 @@
         const output = document.getElementById('output');
         const startButton = document.getElementById('startButton');
 
+        let miningInterval; // インターバルID
+        let minedBlocks = 0;
+        let attempts = 0;
+
         // ランダムなハッシュ値を生成する関数
         function generateRandomHash() {
             const randomString = Array(64)
@@ -95,19 +98,19 @@
             });
         }
 
-        // マイニングシミュレーション
+        // マイニングシミュレーションを開始する
         async function startMining() {
             startButton.disabled = true;
             output.innerHTML = 'Starting Bitcoin Mining Simulation...\n\n';
-            let minedBlocks = 0;
-            let attempts = 0;
 
-            while (minedBlocks < 5) {
+            // マイニング進行状況を定期的に更新
+            miningInterval = setInterval(async () => {
                 const { hash, nonce } = generateRandomHash();
                 const resolvedHash = await hash;
 
                 // 成功判定の確率を調整
                 const isSuccessful = Math.random() < 0.1; // 10%の確率で成功
+
                 attempts++;
 
                 if (isSuccessful) {
@@ -116,17 +119,20 @@
                     output.innerHTML += `Nonce: ${nonce}\n`;
                     output.innerHTML += `---------------------------------\n`;
                     minedBlocks++;
-                    attempts = 0; // リセット
+                    attempts = 0; // 成功後は試行回数をリセット
                 } else {
                     output.innerHTML += `[...] Mining... Attempt ${attempts}: Hash ${resolvedHash.slice(0, 20)}...\n`;
                 }
 
                 output.scrollTop = output.scrollHeight; // 自動スクロール
-                await new Promise((resolve) => setTimeout(resolve, 100)); // 処理を少し遅らせる
-            }
 
-            output.innerHTML += 'Bitcoin Mining Simulation Complete!';
-            startButton.disabled = false;
+                // 5ブロックマイニング成功で終了
+                if (minedBlocks >= 5) {
+                    clearInterval(miningInterval);
+                    output.innerHTML += 'Bitcoin Mining Simulation Complete!';
+                    startButton.disabled = false;
+                }
+            }, 100); // 100ミリ秒ごとにマイニングを進行
         }
 
         // ボタンにイベントリスナーを追加
